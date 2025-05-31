@@ -1,5 +1,3 @@
-# bot_superapp.py (hanya fungsi-fungsi utama yang dimodifikasi)
-# Pastikan bagian import dan inisialisasi di awal tetap sama
 
 def order(update, context):
     try:
@@ -71,7 +69,3 @@ def order(update, context):
         update.message.reply_text(hasil_text, parse_mode='HTML')
     except Exception as e:
         update.message.reply_text(f"Terjadi kesalahan: {e}")
-
-# Fungsi cekstok, orderkeyword, cekhpp, help juga sudah termasuk dan identik seperti versi sebelumnya
-
-# File ini hanya contoh isi awal, akan kamu tempelkan ke script utama
