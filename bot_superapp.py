@@ -1,5 +1,18 @@
 
-def order(update, context):
+import pandas as pd
+import math
+from telegram import Update
+from telegram.ext import CallbackContext
+
+# Dummy dataframe sebagai placeholder untuk kode lengkap
+df_supplier = pd.DataFrame()
+df_stok = pd.DataFrame()
+df_beli = pd.DataFrame()
+user_order_cache = {}
+
+BATAS_PRIORITAS_MINIMAL = 0.05
+
+def order(update: Update, context: CallbackContext):
     try:
         args = context.args
         if len(args) < 2:
@@ -64,8 +77,11 @@ def order(update, context):
         hasil_text = f"📦 Order List – Supplier: {supplier_input.title()} – Cabang: {cabang.upper()}
 
 "
-        hasil_text += "\n".join(hasil_order)
-        hasil_text += f"\n\n💰 Total Order: Rp{int(total_order):,}".replace(",", ".")
+        hasil_text += "
+".join(hasil_order)
+        hasil_text += f"
+
+💰 Total Order: Rp{int(total_order):,}".replace(",", ".")
         update.message.reply_text(hasil_text, parse_mode='HTML')
     except Exception as e:
         update.message.reply_text(f"Terjadi kesalahan: {e}")
