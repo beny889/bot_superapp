@@ -106,12 +106,16 @@ def handler_pilihan_angka(update, context):
     finally:
         context.user_data.pop('cekhpp_selection', None)
 
+def is_discontinued(supplier_raw):
+    return "discontinou" in str(supplier_raw).lower()
+
 def cekstok(update, context):
     try:
         args = context.args
         if not args:
             update.message.reply_text("Format: /cekstok [keyword] [cabang (opsional)]")
             return
+
         cabang_opsi = ['pkp', 'bjg', 'cld']
         if args[-1].lower() in cabang_opsi:
             cabang = args[-1].lower()
@@ -122,22 +126,31 @@ def cekstok(update, context):
 
         cocok = df_stok[df_stok['nama item'].str.lower().str.contains(keyword)]
         hasil = []
+
         for _, row in cocok.iterrows():
             kode = row['kode item']
             supp = df_supplier[df_supplier['kode item'] == kode]
-            if not supp.empty and is_discontinued(supp.iloc[0].get('supplier')): continue
+
+            # Filter jika supplier termasuk discontinou
+            if not supp.empty and is_discontinued(supp.iloc[0].get('supplier')):
+                continue
+
             nama = row['nama item']
             if cabang == "all":
-                stok_text = f"PKP:{row.get('stok cab. pkp',0)} | BJG:{row.get('stok cab. bjg',0)} | CLD:{row.get('stok cab. cld',0)}"
+                stok_text = f"PKP:{row.get('stok cab. pkp', 0)} | BJG:{row.get('stok cab. bjg', 0)} | CLD:{row.get('stok cab. cld', 0)}"
             else:
                 stok_text = f"{cabang.upper()}: {row.get(f'stok cab. {cabang}', 0)}"
+
             hasil.append(f"• {nama} ({kode}) → {stok_text}")
+
         if not hasil:
             update.message.reply_text("Tidak ditemukan.")
         else:
             update.message.reply_text("\n".join(hasil[:10]) + ("\n⚠️ Maks 10 item." if len(hasil) > 10 else ""))
+
     except Exception as e:
         update.message.reply_text(f"Terjadi kesalahan: {e}")
+
 
 def orderkeyword(update, context):
     try:
