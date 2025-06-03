@@ -71,6 +71,7 @@ def cekhpp(update, context):
             return
         elif len(cocok) == 1:
             tampilkan_histori(update, cocok.iloc[0]['kode item'], cocok.iloc[0]['nama item'])
+
         else:
             pilihan = []
             teks = [f"🔍 Ditemukan {len(cocok)} item:\n"]
@@ -131,7 +132,15 @@ def cekstok(update, context):
             cabang = "all"
             keyword = " ".join(args).lower()
 
-        cocok = df_stok[df_stok['nama item'].str.lower().str.contains(keyword)]
+        # Cari item yang cocok dari stok
+cocok = df_stok[df_stok['nama item'].str.lower().str.contains(keyword)]
+
+# Gabungkan dengan supplier untuk filter yang discontinue
+cocok = cocok.merge(df_supplier[['kode item', 'supplier']], on='kode item', how='left')
+
+# Filter hanya yang tidak discontinue
+cocok = cocok[~cocok['supplier'].apply(is_discontinued)]
+
         hasil = []
 
         for _, row in cocok.iterrows():
