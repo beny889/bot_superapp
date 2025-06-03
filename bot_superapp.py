@@ -138,17 +138,13 @@ def cekstok(update, context):
             cabang = "all"
             keyword = " ".join(args).lower()
 
-        # Cari item yang cocok dari stok
-cocok = df_stok[df_stok['nama item'].str.lower().str.contains(keyword)]
+        # ✅ Perbaikan: sekarang berada di dalam try
+        cocok = df_stok[df_stok['nama item'].str.lower().str.contains(keyword)]
 
-# Gabungkan dengan supplier untuk filter yang discontinue
-cocok = cocok.merge(df_supplier[['kode item', 'supplier']], on='kode item', how='left')
-
-# Filter hanya yang tidak discontinue
-cocok = cocok[~cocok['supplier'].apply(is_discontinued)]
+        cocok = cocok.merge(df_supplier[['kode item', 'supplier']], on='kode item', how='left')
+        cocok = cocok[~cocok['supplier'].apply(is_discontinued)]
 
         hasil = []
-
         for _, row in cocok.iterrows():
             kode = row['kode item']
             supp = df_supplier[df_supplier['kode item'] == kode]
@@ -168,6 +164,7 @@ cocok = cocok[~cocok['supplier'].apply(is_discontinued)]
 
     except Exception as e:
         update.message.reply_text(f"Terjadi kesalahan: {e}")
+
 
 def orderkeyword(update, context):
     try:
