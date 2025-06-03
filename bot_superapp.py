@@ -64,14 +64,17 @@ def cekhpp(update, context):
         if not args:
             update.message.reply_text("Format: /cekhpp [nama item]")
             return
+
         keyword = " ".join(args).lower()
         cocok = df_stok[df_stok['nama item'].str.lower().str.contains(keyword)]
+        cocok = cocok.merge(df_supplier[['kode item', 'supplier']], on='kode item', how='left')
+        cocok = cocok[~cocok['supplier'].apply(is_discontinued)]
+
         if cocok.empty:
-            update.message.reply_text("Item tidak ditemukan.")
+            update.message.reply_text("Item tidak ditemukan atau termasuk discontinued.")
             return
         elif len(cocok) == 1:
             tampilkan_histori(update, cocok.iloc[0]['kode item'], cocok.iloc[0]['nama item'])
-
         else:
             pilihan = []
             teks = [f"🔍 Ditemukan {len(cocok)} item:\n"]
@@ -83,8 +86,10 @@ def cekhpp(update, context):
                     break
             context.user_data['cekhpp_selection'] = pilihan
             update.message.reply_text("\n".join(teks) + "\n\nKetik angka (1-10) untuk pilih.")
+
     except Exception as e:
         update.message.reply_text(f"Terjadi kesalahan: {e}")
+
 
 def tampilkan_histori(update, kode, nama):
     df_item = df_beli[df_beli['kode item'] == kode].copy()
