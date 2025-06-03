@@ -341,6 +341,10 @@ def webhook():
 def setup_webhook():
     bot.delete_webhook()
     bot.set_webhook(url=WEBHOOK_URL.rstrip("/") + "/webhook")
+@app.route("/", methods=["GET"])
+def index():
+    return "Bot is running", 200
+
 
 # ========== ENTRY POINT ==========
 if __name__ == "__main__":
