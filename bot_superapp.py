@@ -66,7 +66,11 @@ def cekhpp(update, context):
             return
 
         keyword = " ".join(args).lower()
+
+        # Cari item dari df_stok
         cocok = df_stok[df_stok['nama item'].str.lower().str.contains(keyword)]
+
+        # Gabungkan dengan df_supplier dan filter discontinou
         cocok = cocok.merge(df_supplier[['kode item', 'supplier']], on='kode item', how='left')
         cocok = cocok[~cocok['supplier'].apply(is_discontinued)]
 
@@ -86,9 +90,9 @@ def cekhpp(update, context):
                     break
             context.user_data['cekhpp_selection'] = pilihan
             update.message.reply_text("\n".join(teks) + "\n\nKetik angka (1-10) untuk pilih.")
-
     except Exception as e:
         update.message.reply_text(f"Terjadi kesalahan: {e}")
+
 
 
 def tampilkan_histori(update, kode, nama):
