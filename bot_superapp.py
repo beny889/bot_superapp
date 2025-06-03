@@ -9,6 +9,7 @@ from flask import Flask, request
 import math
 import time
 import os
+import json
 
 # ========== KONFIGURASI ==========
 BATAS_PRIORITAS_MINIMAL = 0.8
@@ -21,7 +22,9 @@ warnings.simplefilter(action='ignore', category=pd.errors.SettingWithCopyWarning
 
 # Autentikasi Google Sheets
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, scope)
+credentials_dict = json.loads(os.environ["GOOGLE_CREDENTIALS_JSON"])
+creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_dict, scope)
+
 client = gspread.authorize(creds)
 
 def safe_get_records(sheet, retries=3, delay=3):
