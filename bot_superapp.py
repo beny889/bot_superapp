@@ -160,7 +160,7 @@ def cekstok(update, context):
         if not hasil:
             update.message.reply_text("Tidak ditemukan.")
         else:
-            update.message.reply_text("\n".join(hasil[:10]) + ("\n⚠️ Maks 10 item." if len(hasil) > 10 else ""))
+            update.message.reply_text("\n".join(hasil[:20]) + ("\n⚠️ Maks 20 item." if len(hasil) > 20 else ""))
 
     except Exception as e:
         update.message.reply_text(f"Terjadi kesalahan: {e}")
